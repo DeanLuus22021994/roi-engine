@@ -64,8 +64,12 @@ jobs:
           echo "## Code Quality Summary" >> retrospective.md
           cat quality-report.md >> retrospective.md
           echo "## Performance Metrics" >> retrospective.md
-          echo "- Build time: ${GITHUB_RUN_DURATION:-Unknown}" >> retrospective.md
-          echo "- Test coverage: $(cat coverage/coverage-summary.json | jq -r '.total.lines.pct')% (if available)" >> retrospective.md || echo "- Test coverage: Not available" >> retrospective.md
+          echo "- Build time: Unknown" >> retrospective.md
+          if [ -f coverage/coverage-summary.json ]; then
+            echo "- Test coverage: $(cat coverage/coverage-summary.json | jq -r '.total.lines.pct')%" >> retrospective.md
+          else
+            echo "- Test coverage: Not available" >> retrospective.md
+          fi
           echo "## Action Items" >> retrospective.md
           echo "- Address ESLint issues" >> retrospective.md
           echo "- Resolve TypeScript errors" >> retrospective.md

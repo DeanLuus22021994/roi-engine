@@ -1,37 +1,30 @@
+'use client';
+
 import React, { createContext, useContext, ReactNode } from 'react';
-import { useContextAwareness } from '../utils/contextAwareness';
+import { useContextAwareness } from '@/utils/contextAwareness';
 
-// Create context with default values
-const ContextAwarenessContext = createContext<ReturnType<typeof useContextAwareness> | null>(null);
+// Interface for the Context
+type ContextAwarenessContextType = ReturnType<typeof useContextAwareness>;
 
-interface ContextAwarenessProviderProps {
-  children: ReactNode;
-}
+// Create the context with default values
+const ContextAwarenessContext = createContext<ContextAwarenessContextType | undefined>(undefined);
 
-/**
- * Context provider for the context awareness system
- * Provides error tracking, performance monitoring, and feature usage analytics
- * throughout the application
- */
-export function ContextAwarenessProvider({ children }: ContextAwarenessProviderProps) {
-  const contextAwareness = useContextAwareness();
-  
+// Provider component
+export function ContextAwarenessProvider({ children }: { children: ReactNode }) {
+  const contextAwarenessUtils = useContextAwareness();
+
   return (
-    <ContextAwarenessContext.Provider value={contextAwareness}>
+    <ContextAwarenessContext.Provider value={contextAwarenessUtils}>
       {children}
     </ContextAwarenessContext.Provider>
   );
 }
 
-/**
- * Hook to access the context awareness system from any component
- */
-export function useAppContextAwareness() {
+// Custom hook to consume the context
+export function useContextAwarenessContext() {
   const context = useContext(ContextAwarenessContext);
-  
-  if (!context) {
-    throw new Error('useAppContextAwareness must be used within a ContextAwarenessProvider');
+  if (context === undefined) {
+    throw new Error('useContextAwarenessContext must be used within a ContextAwarenessProvider');
   }
-  
   return context;
 }
