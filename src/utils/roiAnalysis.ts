@@ -157,7 +157,7 @@ export class ROIRepository {
   }
   
   // Generate summary report
-  static generateSummaryReport(): Record<string, any> {
+  static generateSummaryReport(): Record<string, unknown> {
     const completedAnalyses = this.getAnalysesByStatus('completed');
     const inProgressAnalyses = this.getAnalysesByStatus('in-progress');
     const proposedAnalyses = this.getAnalysesByStatus('proposed');
