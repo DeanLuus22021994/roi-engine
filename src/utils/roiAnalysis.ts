@@ -37,6 +37,11 @@ export type ROIAnalysis = {
   status: 'proposed' | 'in-progress' | 'completed' | 'abandoned';
 };
 
+export function calculateROI(investment: number, returns: number): number {
+  if (investment === 0) return 0;
+  return (returns / investment) * 100;
+}
+
 export class ROICalculator {
   // Calculate developer cost
   static calculateDeveloperCost(timeInvestment: TimeInvestment, hourlyRate: number): number {

@@ -196,3 +196,7 @@ export function withErrorTracking<P>(Component: React.ComponentType<P>) {
     }
   };
 }
+
+export function getContextValue(key: string, context: Record<string, any>): any {
+  return context[key];
+}

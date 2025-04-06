@@ -1,5 +1,5 @@
 import React, { createContext, useContext, ReactNode } from 'react';
-import { useContextAwareness } from '@/utils/contextAwareness';
+import { useContextAwareness } from '../utils/contextAwareness';
 
 // Create context with default values
 const ContextAwarenessContext = createContext<ReturnType<typeof useContextAwareness> | null>(null);
