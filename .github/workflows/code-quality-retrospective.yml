@@ -1,0 +1,78 @@
+name: Code Quality & Retrospective
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  schedule:
+    - cron: "0 0 * * 0" # Weekly on Sunday for retrospectives
+
+jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npx eslint --ext .js,.jsx,.ts,.tsx .
+
+      - name: Check TypeScript
+        run: npx tsc --noEmit
+
+      - name: Run tests
+        run: npm test
+        env:
+          CI: true
+
+      - name: Generate code quality report
+        run: |
+          echo "## Code Quality Report" > quality-report.md
+          echo "### ESLint Issues" >> quality-report.md
+          npx eslint --ext .js,.jsx,.ts,.tsx --format markdown . >> quality-report.md || true
+          echo "### TypeScript Errors" >> quality-report.md
+          npx tsc --noEmit --pretty >> quality-report.md 2>&1 || true
+
+      - name: Upload quality report
+        uses: actions/upload-artifact@v3
+        with:
+          name: code-quality-report
+          path: quality-report.md
+
+  weekly-retrospective:
+    if: github.event_name == 'schedule'
+    needs: code-quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download quality report
+        uses: actions/download-artifact@v3
+        with:
+          name: code-quality-report
+
+      - name: Generate retrospective
+        run: |
+          echo "# Weekly Retrospective" > retrospective.md
+          echo "## Generated on $(date)" >> retrospective.md
+          echo "## Code Quality Summary" >> retrospective.md
+          cat quality-report.md >> retrospective.md
+          echo "## Performance Metrics" >> retrospective.md
+          echo "- Build time: ${GITHUB_RUN_DURATION:-Unknown}" >> retrospective.md
+          echo "- Test coverage: $(cat coverage/coverage-summary.json | jq -r '.total.lines.pct')% (if available)" >> retrospective.md || echo "- Test coverage: Not available" >> retrospective.md
+          echo "## Action Items" >> retrospective.md
+          echo "- Address ESLint issues" >> retrospective.md
+          echo "- Resolve TypeScript errors" >> retrospective.md
+          echo "- Improve test coverage" >> retrospective.md
+
+      - name: Upload retrospective
+        uses: actions/upload-artifact@v3
+        with:
+          name: weekly-retrospective
+          path: retrospective.md

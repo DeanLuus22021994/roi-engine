@@ -1,0 +1,12 @@
+{
+  "name": "MinimalReactMariaDB",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "web",
+  "workspaceFolder": "/workspaces/minimalreactmariadbapp",
+  "customizations": {
+    "vscode": {
+      "settings": {},
+      "extensions": []
+    }
+  }
+}
